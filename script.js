@@ -4,8 +4,8 @@ function demoTrack(n) {
 
 const library = {
   "Философия": {
-    color: "#7c6bff",
-    emoji: "🌙",
+    color: "#ffffff",
+    emoji: "🌑",
     tracks: [
       { quote: "Сила — это не мышцы, а решение не сдаваться.", source: "заглушка — впиши свою цитату", src: demoTrack(1) },
       { quote: "Путь важнее той точки, куда он ведёт.", source: "заглушка — впиши свою цитату", src: demoTrack(2) },
@@ -25,7 +25,7 @@ const library = {
       { quote: "Обещаю найти тебя в любой из тысячи жизней.", source: "заглушка — впиши свою цитату", src: demoTrack(1) },
     ]
   },
-  "Весёлые": {
+  "Веселые": {
     color: "#ffc75f",
     emoji: "🎉",
     tracks: [
@@ -37,7 +37,7 @@ const library = {
     ]
   },
   "Грустные": {
-    color: "#6b8bff",
+    color: "#4fc3f7",
     emoji: "💧",
     tracks: [
       { quote: "Иногда прощание — это единственное, что остаётся сказать.", source: "заглушка — впиши свою цитату", src: demoTrack(7) },
@@ -48,8 +48,8 @@ const library = {
     ]
   },
   "Ностальгия": {
-    color: "#c98bff",
-    emoji: "📼",
+    color: "#2eb86c",
+    emoji: "🍀",
     tracks: [
       { quote: "Помню это лето так ясно, будто было вчера.", source: "заглушка — впиши свою цитату", src: demoTrack(3) },
       { quote: "Мы думали, что у нас есть всё время на свете.", source: "заглушка — впиши свою цитату", src: demoTrack(4) },
