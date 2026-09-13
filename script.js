@@ -99,6 +99,21 @@ const arm = document.getElementById('arm');
 const PLAY_ICON = '<path d="M8 5v14l11-7z"/>';
 const PAUSE_ICON = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 
+// ---------- тонировка фона под цвет текущей категории ----------
+
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function applyCategoryTint(name) {
+  const cat = library[name];
+  document.documentElement.style.setProperty('--cat-tint', hexToRgba(cat.color, 0.16));
+}
+
 // ---------- боковое меню категорий ----------
 
 function renderSidebar() {
@@ -121,6 +136,7 @@ function switchCategory(name) {
     el.classList.toggle('active', el.dataset.name === name);
   });
 
+  applyCategoryTint(name);
   renderPlaylist();
   loadTrack(false);
 }
@@ -315,6 +331,7 @@ function renderBackgroundDecor() {
 // ---------- запуск ----------
 
 renderSidebar();
+applyCategoryTint(currentCategory);
 renderPlaylist();
 loadTrack(false);
 renderBackgroundDecor();

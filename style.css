@@ -110,7 +110,7 @@ body {
 .sidebar {
   width: 230px;
   flex-shrink: 0;
-  background: var(--panel);
+  background: linear-gradient(160deg, var(--cat-tint, transparent), transparent 65%), var(--panel);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -168,7 +168,7 @@ body {
 }
 
 .now-playing {
-  background: var(--panel);
+  background: linear-gradient(160deg, var(--cat-tint, transparent), transparent 65%), var(--panel); transition: background .5s ease;
   backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -317,7 +317,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .playlist-panel {
   flex: 1;
-  background: var(--panel);
+  background: linear-gradient(160deg, var(--cat-tint, transparent), transparent 65%), var(--panel); transition: background .5s ease;
   backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 24px;
