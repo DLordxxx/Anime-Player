@@ -1,69 +1,9 @@
-function demoTrack(n) {
-  return `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${n}.mp3`;
-}
-
-const library = {
-  "Философия": {
-    color: "#ffffff",
-    emoji: "🌑",
-    tracks: [
-      { quote: "Сила — это не мышцы, а решение не сдаваться.", source: "заглушка — впиши свою цитату", src: demoTrack(1) },
-      { quote: "Путь важнее той точки, куда он ведёт.", source: "заглушка — впиши свою цитату", src: demoTrack(2) },
-      { quote: "Страх исчезает, когда ты перестаёшь от него бежать.", source: "заглушка — впиши свою цитату", src: demoTrack(3) },
-      { quote: "То, что кажется концом, часто оказывается началом.", source: "заглушка — впиши свою цитату", src: demoTrack(4) },
-      { quote: "Мир не спрашивает, готов ли ты — он просто идёт дальше.", source: "заглушка — впиши свою цитату", src: demoTrack(5) },
-    ]
-  },
-  "Романтика": {
-    color: "#ff6fa5",
-    emoji: "🌸",
-    tracks: [
-      { quote: "Я узнаю тебя даже среди тысячи голосов.", source: "заглушка — впиши свою цитату", src: demoTrack(6) },
-      { quote: "Рядом с тобой даже дождь кажется тёплым.", source: "заглушка — впиши свою цитату", src: demoTrack(7) },
-      { quote: "Ты — единственная причина, по которой я оглядываюсь.", source: "заглушка — впиши свою цитату", src: demoTrack(8) },
-      { quote: "Некоторые встречи меняют весь дальнейший путь.", source: "заглушка — впиши свою цитату", src: demoTrack(9) },
-      { quote: "Обещаю найти тебя в любой из тысячи жизней.", source: "заглушка — впиши свою цитату", src: demoTrack(1) },
-    ]
-  },
-  "Веселые": {
-    color: "#ffc75f",
-    emoji: "🎉",
-    tracks: [
-      { quote: "План был идеальным. Ну, почти.", source: "заглушка — впиши свою цитату", src: demoTrack(2) },
-      { quote: "Серьёзность — это временно, а глупости — навсегда.", source: "заглушка — впиши свою цитату", src: demoTrack(3) },
-      { quote: "Я не опоздал, я просто эффектно появился позже.", source: "заглушка — впиши свою цитату", src: demoTrack(4) },
-      { quote: "Проблема? Отлично, обожаю проблемы по утрам.", source: "заглушка — впиши свою цитату", src: demoTrack(5) },
-      { quote: "Побеждать скучно, я предпочитаю делать это красиво.", source: "заглушка — впиши свою цитату", src: demoTrack(6) },
-    ]
-  },
-  "Грустные": {
-    color: "#4fc3f7",
-    emoji: "💧",
-    tracks: [
-      { quote: "Иногда прощание — это единственное, что остаётся сказать.", source: "заглушка — впиши свою цитату", src: demoTrack(7) },
-      { quote: "Я улыбаюсь, чтобы никто не заметил, как тяжело.", source: "заглушка — впиши свою цитату", src: demoTrack(8) },
-      { quote: "Пустота после потери не заполняется — с ней просто учишься жить.", source: "заглушка — впиши свою цитату", src: demoTrack(9) },
-      { quote: "Некоторые люди уходят, даже оставаясь рядом.", source: "заглушка — впиши свою цитату", src: demoTrack(1) },
-      { quote: "Больнее всего вспоминать то, что было хорошо.", source: "заглушка — впиши свою цитату", src: demoTrack(2) },
-    ]
-  },
-  "Ностальгия": {
-    color: "#2eb86c",
-    emoji: "🍀",
-    tracks: [
-      { quote: "Помню это лето так ясно, будто было вчера.", source: "заглушка — впиши свою цитату", src: demoTrack(3) },
-      { quote: "Мы думали, что у нас есть всё время на свете.", source: "заглушка — впиши свою цитату", src: demoTrack(4) },
-      { quote: "Детство закончилось незаметно, где-то между двумя звонками.", source: "заглушка — впиши свою цитату", src: demoTrack(5) },
-      { quote: "Тот двор до сих пор снится мне по ночам.", source: "заглушка — впиши свою цитату", src: demoTrack(6) },
-      { quote: "Странно, как старая песня возвращает целую жизнь назад.", source: "заглушка — впиши свою цитату", src: demoTrack(7) },
-    ]
-  }
-};
-
-const categoryNames = Object.keys(library);
+// данные теперь не хранятся прямо в коде, а грузятся из data.json (см. функцию init() внизу файла)
+let library = {};
+let categoryNames = [];
 
 // текущее состояние плеера
-let currentCategory = categoryNames[0];
+let currentCategory = '';
 let currentIndex = 0;
 let isPlaying = false;
 let shuffleOn = false;
@@ -330,8 +270,17 @@ function renderBackgroundDecor() {
 
 // ---------- запуск ----------
 
-renderSidebar();
-applyCategoryTint(currentCategory);
-renderPlaylist();
-loadTrack(false);
-renderBackgroundDecor();
+async function init() {
+  const response = await fetch('data.json');
+  library = await response.json();
+  categoryNames = Object.keys(library);
+  currentCategory = categoryNames[0];
+
+  renderSidebar();
+  applyCategoryTint(currentCategory);
+  renderPlaylist();
+  loadTrack(false);
+  renderBackgroundDecor();
+}
+
+init();

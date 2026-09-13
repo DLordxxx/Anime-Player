@@ -1,0 +1,49 @@
+{
+  "Философия": {
+    "color": "#ffffff",
+    "emoji": "🌑",
+    "tracks": [
+      { "quote": "Боль, Ненависть и страдание", "source": "Наруто", "src": "music/Philosophy/Philosophy-1.mp3" },
+      { "quote": "Путь важнее той точки, куда он ведёт.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+      { "quote": "Страх исчезает, когда ты перестаёшь от него бежать.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+    ]
+  },
+  "Романтика": {
+    "color": "#ff6fa5",
+    "emoji": "🌸",
+    "tracks": [
+      { "quote": "Я узнаю тебя даже среди тысячи голосов.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
+      { "quote": "Рядом с тобой даже дождь кажется тёплым.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+      { "quote": "Ты — единственная причина, по которой я оглядываюсь.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+    ]
+  },
+  "Веселые": {
+    "color": "#ffc75f",
+    "emoji": "🎉",
+    "tracks": [
+      { "quote": "Fun - Fun Cartoon Music", "source": "PaulYudin", "src": "music/Fun/Fun-1.mp3" },
+      { "quote": "Серьёзность — это временно, а глупости — навсегда.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+      { "quote": "Я не опоздал, я просто эффектно появился позже.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+    ]
+  },
+  "Грустные": {
+    "color": "#4fc3f7",
+    "emoji": "💧",
+    "tracks": [
+      { "quote": "Тот, кто не может пожертвовать всем, не сможет изменить хоть что-то", "source": "Атака Титанов", "src": "music/Sad/Sad-1.mp3" },
+      { "quote": "Я улыбаюсь, чтобы никто не заметил, как тяжело.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+      { "quote": "Пустота после потери не заполняется — с ней просто учишься жить.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" }
+    ]
+  },
+  "Ностальгия": {
+    "color": "#2eb86c",
+    "emoji": "🍀",
+    "tracks": [
+      { "quote": "Помню это лето так ясно, будто было вчера.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+      { "quote": "Мы думали, что у нас есть всё время на свете.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+      { "quote": "Детство закончилось незаметно, где-то между двумя звонками.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+      { "quote": "Тот двор до сих пор снится мне по ночам.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
+      { "quote": "Странно, как старая песня возвращает целую жизнь назад.", "source": "заглушка — впиши свою цитату", "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" }
+    ]
+  }
+}
