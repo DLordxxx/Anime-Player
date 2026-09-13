@@ -1,728 +1,100 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Vibes — Music Player</title>
-<style>
-  :root{
-    --bg-deep: #0a0a14;
-    --panel: rgba(20, 18, 32, 0.72);
-    --panel-solid: #17152a;
-    --border: rgba(255,255,255,0.08);
-    --text: #f1eefc;
-    --text-dim: #9b93b8;
-    --accent: #ff6fa5;
-    --accent-2: #7c6bff;
-    --accent-3: #4fd6d0;
-  }
-  *{ box-sizing: border-box; }
-  html,body{ height:100%; }
-  body{
-    margin:0;
-    font-family: 'Segoe UI', 'Yu Gothic UI', Roboto, Arial, sans-serif;
-    color: var(--text);
-    overflow-x:hidden;
-    background: var(--bg-deep);
-    position:relative;
-  }
-
-  /* ===== АНИМНЫЙ ФОН: небо + звёзды + луна + сакура + силуэт города ===== */
-  .bg{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    background:
-      radial-gradient(ellipse at 80% 15%, rgba(255,111,165,0.18), transparent 55%),
-      radial-gradient(ellipse at 15% 10%, rgba(124,107,255,0.22), transparent 50%),
-      linear-gradient(180deg, #120e26 0%, #1a1130 35%, #2a1440 65%, #170a1e 100%);
-    overflow:hidden;
-  }
-  .moon{
-    position:absolute;
-    top:8%; right:10%;
-    width:120px; height:120px;
-    border-radius:50%;
-    background: radial-gradient(circle at 35% 35%, #fff8ec, #ffe6c2 55%, #f4c98a 100%);
-    box-shadow: 0 0 60px 20px rgba(255, 225, 170, 0.35), 0 0 140px 60px rgba(255,111,165,0.12);
-  }
-  .star{
-    position:absolute;
-    width:2px; height:2px;
-    background:#fff;
-    border-radius:50%;
-    opacity:0.8;
-    animation: twinkle 3s ease-in-out infinite;
-  }
-  @keyframes twinkle{
-    0%,100%{ opacity:0.2; }
-    50%{ opacity:1; }
-  }
-  .skyline{
-    position:absolute;
-    bottom:0; left:0; right:0;
-    height:28vh;
-    background: linear-gradient(180deg, transparent, rgba(10,8,20,0.9) 60%, #0a0814 100%);
-  }
-  .skyline::before{
-    content:"";
-    position:absolute;
-    bottom:0; left:0; right:0;
-    height:100%;
-    background-image: repeating-linear-gradient(90deg, #150f24 0 40px, #1c1430 40px 80px, #150f24 80px 120px);
-    clip-path: polygon(
-      0% 100%, 0% 55%, 4% 55%, 4% 40%, 9% 40%, 9% 60%, 14% 60%, 14% 30%,
-      19% 30%, 19% 65%, 24% 65%, 24% 45%, 30% 45%, 30% 70%, 36% 70%, 36% 35%,
-      42% 35%, 42% 58%, 48% 58%, 48% 25%, 54% 25%, 54% 62%, 60% 62%, 60% 40%,
-      66% 40%, 66% 68%, 72% 68%, 72% 32%, 78% 32%, 78% 55%, 84% 55%, 84% 42%,
-      90% 42%, 90% 66%, 96% 66%, 96% 48%, 100% 48%, 100% 100%
-    );
-    opacity:0.85;
-  }
-  .petal{
-    position:absolute;
-    top:-5%;
-    width:14px; height:14px;
-    background: linear-gradient(135deg, #ffb3d1, var(--accent));
-    border-radius: 60% 0 60% 0;
-    opacity:0.85;
-    filter: drop-shadow(0 0 4px rgba(255,111,165,0.4));
-    animation: fall linear infinite;
-  }
-  @keyframes fall{
-    0%{ transform: translateY(-10vh) translateX(0) rotate(0deg); }
-    100%{ transform: translateY(115vh) translateX(40px) rotate(360deg); }
-  }
-
-  /* ===== ЛЕЙАУТ ===== */
-  .app{
-    position:relative;
-    z-index:1;
-    display:flex;
-    min-height:100vh;
-    padding:28px;
-    gap:24px;
-  }
-
-  .sidebar{
-    width:230px;
-    flex-shrink:0;
-    background: var(--panel);
-    backdrop-filter: blur(16px);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:20px 14px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .brand{
-    font-size:17px;
-    font-weight:800;
-    padding:6px 10px 18px;
-    letter-spacing:0.5px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-  }
-  .cat-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-radius:12px;
-    cursor:pointer;
-    font-size:13.5px;
-    font-weight:600;
-    color: var(--text-dim);
-    transition: all .2s ease;
-    border:1px solid transparent;
-  }
-  .cat-item .dot{
-    width:9px; height:9px;
-    border-radius:50%;
-    flex-shrink:0;
-  }
-  .cat-item:hover{ color: var(--text); background: rgba(255,255,255,0.04); }
-  .cat-item.active{
-    color:#fff;
-    background: rgba(255,255,255,0.07);
-    border-color: var(--border);
-  }
-
-  .main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-    min-width:0;
-  }
-
-  .now-playing{
-    background: var(--panel);
-    backdrop-filter: blur(16px);
-    border:1px solid var(--border);
-    border-radius:24px;
-    padding:28px;
-    display:flex;
-    align-items:center;
-    gap:32px;
-  }
-
-  /* Виниловый диск */
-  .vinyl-wrap{
-    flex-shrink:0;
-    width:190px; height:190px;
-    position:relative;
-  }
-  .vinyl{
-    width:100%; height:100%;
-    border-radius:50%;
-    position:relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    animation: spin 6s linear infinite;
-    animation-play-state: paused;
-  }
-  .vinyl.spinning{ animation-play-state: running; }
-  @keyframes spin{
-    from{ transform: rotate(0deg); }
-    to{ transform: rotate(360deg); }
-  }
-  .vinyl .ring{
-    position:absolute; border-radius:50%;
-    border:1px solid rgba(255,255,255,0.06);
-  }
-  .vinyl .label{
-    position:absolute;
-    top:50%; left:50%;
-    width:64px; height:64px;
-    transform: translate(-50%,-50%);
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:26px;
-    box-shadow: inset 0 0 0 4px rgba(0,0,0,0.25);
-  }
-  .vinyl .hole{
-    position:absolute;
-    top:50%; left:50%;
-    width:10px; height:10px;
-    background: var(--bg-deep);
-    border-radius:50%;
-    transform: translate(-50%,-50%);
-  }
-  .arm{
-    position:absolute;
-    top:-6px; right:6px;
-    width:70px; height:70px;
-    transform-origin: 90% 10%;
-    transform: rotate(-18deg);
-    transition: transform .4s ease;
-    pointer-events:none;
-  }
-  .arm.down{ transform: rotate(6deg); }
-  .arm svg{ width:100%; height:100%; opacity:0.85; }
-
-  .np-info{ min-width:0; flex:1; }
-  .np-cat{
-    display:inline-block;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.5px;
-    text-transform:uppercase;
-    padding:4px 10px;
-    border-radius:20px;
-    background: rgba(255,255,255,0.08);
-    margin-bottom:10px;
-  }
-  .np-title{ font-size:24px; font-weight:800; margin-bottom:4px; }
-  .np-artist{ font-size:14px; color: var(--text-dim); margin-bottom:20px; }
-
-  .progress-row{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
-  .progress-row .time{ font-size:11px; color:var(--text-dim); width:34px; text-align:center; flex-shrink:0; }
-  input[type="range"]{
-    -webkit-appearance:none; appearance:none;
-    width:100%; height:5px; border-radius:4px;
-    background: rgba(255,255,255,0.1);
-    outline:none; cursor:pointer;
-  }
-  input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none;
-    width:14px; height:14px; border-radius:50%;
-    background:#fff;
-    box-shadow: 0 0 0 5px rgba(255,111,165,0.25);
-    cursor:pointer;
-  }
-  #progress::-webkit-slider-runnable-track{
-    background: linear-gradient(to right, var(--accent) var(--pg,0%), rgba(255,255,255,0.1) 0%);
-    border-radius:4px; height:5px;
-  }
-
-  .controls{ display:flex; align-items:center; gap:18px; }
-  .ctrl-btn{
-    background:none; border:none; color:var(--text);
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition: transform .15s ease, color .15s ease;
-  }
-  .ctrl-btn:hover{ color: var(--accent); transform: scale(1.12); }
-  .ctrl-btn svg{ width:20px; height:20px; }
-  .ctrl-btn.active{ color: var(--accent); }
-  .ctrl-btn.active svg{ filter: drop-shadow(0 0 6px rgba(255,111,165,0.6)); }
-  #shuffleBtn svg, #repeatBtn svg{ width:17px; height:17px; }
-  #playBtn{
-    width:54px; height:54px; border-radius:50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color:#fff;
-  }
-  #playBtn:hover{ color:#fff; transform: scale(1.07); }
-  #playBtn svg{ width:22px; height:22px; }
-
-  .volume-row{ display:flex; align-items:center; gap:8px; margin-left:auto; width:120px; }
-  .volume-row svg{ width:15px; height:15px; color: var(--text-dim); flex-shrink:0; }
-
-  /* Плейлист */
-  .playlist-panel{
-    flex:1;
-    background: var(--panel);
-    backdrop-filter: blur(16px);
-    border:1px solid var(--border);
-    border-radius:24px;
-    padding:20px 10px 20px 24px;
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-  }
-  .playlist-header{
-    display:flex; align-items:baseline; justify-content:space-between;
-    padding-right:14px; margin-bottom:12px;
-  }
-  .playlist-header h2{ font-size:18px; margin:0; }
-  .playlist-header span{ font-size:12px; color:var(--text-dim); }
-
-  .playlist{ overflow-y:auto; padding-right:12px; }
-  .playlist::-webkit-scrollbar{ width:6px; }
-  .playlist::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:4px; }
-
-  .track-row{
-    display:flex; align-items:center; gap:14px;
-    padding:10px 12px; border-radius:14px; cursor:pointer;
-    transition: background .15s ease;
-  }
-  .track-row:hover{ background: rgba(255,255,255,0.05); }
-  .track-row.active{ background: rgba(255,255,255,0.08); }
-
-  .mini-disc{
-    width:40px; height:40px; border-radius:50%; flex-shrink:0;
-    position:relative;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    animation: spin 5s linear infinite;
-    animation-play-state: paused;
-  }
-  .mini-disc.spinning{ animation-play-state: running; }
-  .mini-disc .m-label{
-    position:absolute; top:50%; left:50%;
-    width:14px; height:14px; transform: translate(-50%,-50%);
-    background: var(--panel-solid); border-radius:50%;
-  }
-
-  .t-meta{ flex:1; min-width:0; }
-  .t-title{ font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .t-artist{ font-size:11.5px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .track-row.active .t-title{ color: var(--accent); }
-  .t-dur{ font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
-  .t-play-icon{ width:14px; height:14px; color:var(--text-dim); flex-shrink:0; }
-  .track-row.active .t-play-icon{ color: var(--accent); }
-
-  @media (max-width: 860px){
-    .app{ flex-direction:column; padding:14px; }
-    .sidebar{ width:100%; flex-direction:row; overflow-x:auto; }
-    .now-playing{ flex-direction:column; text-align:center; }
-    .volume-row{ margin-left:0; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Vibes — Music Player</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="bg" id="bg">
-  <div class="moon"></div>
-  <div class="skyline"></div>
-</div>
-
-<div class="app">
-
-  <!-- Категории -->
-  <div class="sidebar" id="sidebar">
-    <div class="brand">✦ Anime Vibes</div>
+  <div class="bg" id="bg">
+    <div class="moon"></div>
+    <div class="skyline"></div>
   </div>
 
-  <div class="main">
+  <div class="app">
 
-    <!-- Плеер -->
-    <div class="now-playing">
-      <div class="vinyl-wrap">
-        <svg class="arm" id="arm" viewBox="0 0 100 100">
-          <circle cx="88" cy="12" r="7" fill="#2a2540" stroke="#fff" stroke-opacity="0.3" stroke-width="2"/>
-          <rect x="20" y="10" width="66" height="5" rx="2.5" fill="#2a2540" transform="rotate(35 88 12)"/>
-        </svg>
-        <div class="vinyl" id="vinyl">
-          <svg width="100%" height="100%" viewBox="0 0 190 190">
-            <defs>
-              <radialGradient id="discGrad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#2a2440"/>
-                <stop offset="70%" stop-color="#15111f"/>
-                <stop offset="100%" stop-color="#0c0a14"/>
-              </radialGradient>
-            </defs>
-            <circle cx="95" cy="95" r="95" fill="url(#discGrad)"/>
-            <circle cx="95" cy="95" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <circle cx="95" cy="95" r="65" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <circle cx="95" cy="95" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+    <div class="sidebar" id="sidebar">
+      <div class="brand">✦ Anime Vibes</div>
+    </div>
+
+    <div class="main">
+
+      <div class="now-playing">
+        <div class="vinyl-wrap">
+          <svg class="arm" id="arm" viewBox="0 0 100 100">
+            <circle cx="88" cy="12" r="7" fill="#2a2540" stroke="#fff" stroke-opacity="0.3" stroke-width="2"/>
+            <rect x="20" y="10" width="66" height="5" rx="2.5" fill="#2a2540" transform="rotate(35 88 12)"/>
           </svg>
-          <div class="label" id="vinylLabel">♪</div>
-          <div class="hole"></div>
+          <div class="vinyl" id="vinyl">
+            <svg width="100%" height="100%" viewBox="0 0 190 190">
+              <defs>
+                <radialGradient id="discGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#2a2440"/>
+                  <stop offset="70%" stop-color="#15111f"/>
+                  <stop offset="100%" stop-color="#0c0a14"/>
+                </radialGradient>
+              </defs>
+              <circle cx="95" cy="95" r="95" fill="url(#discGrad)"/>
+              <circle cx="95" cy="95" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <circle cx="95" cy="95" r="65" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <circle cx="95" cy="95" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            </svg>
+            <div class="label" id="vinylLabel">♪</div>
+            <div class="hole"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="np-info">
-        <span class="np-cat" id="npCat">Категория</span>
-        <div class="np-title" id="npTitle">Название трека</div>
-        <div class="np-artist" id="npArtist">Исполнитель</div>
+        <div class="np-info">
+          <span class="np-cat" id="npCat">Категория</span>
+          <div class="np-title" id="npTitle">Название трека</div>
+          <div class="np-artist" id="npArtist">Исполнитель</div>
 
-        <div class="progress-row">
-          <span class="time" id="curTime">0:00</span>
-          <input type="range" id="progress" min="0" max="100" value="0" step="0.1">
-          <span class="time" id="durTime">0:00</span>
-        </div>
+          <div class="progress-row">
+            <span class="time" id="curTime">0:00</span>
+            <input type="range" id="progress" min="0" max="100" value="0" step="0.1">
+            <span class="time" id="durTime">0:00</span>
+          </div>
 
-        <div class="controls">
-          <button class="ctrl-btn" id="shuffleBtn" title="Случайный порядок">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.42 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-          </button>
-          <button class="ctrl-btn" id="prevBtn" title="Предыдущий">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-          </button>
-          <button class="ctrl-btn" id="playBtn" title="Play/Pause">
-            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </button>
-          <button class="ctrl-btn" id="nextBtn" title="Следующий">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
-          </button>
-          <button class="ctrl-btn" id="repeatBtn" title="Повторять трек">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-          </button>
+          <div class="controls">
+            <button class="ctrl-btn" id="shuffleBtn" title="Случайный порядок">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.42 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="prevBtn" title="Предыдущий">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="playBtn" title="Play/Pause">
+              <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="nextBtn" title="Следующий">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="repeatBtn" title="Повторять трек">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            </button>
 
-          <div class="volume-row">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 15 8.5v7a4.5 4.5 0 0 0 1.5-3.5z"/></svg>
-            <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
+            <div class="volume-row">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 15 8.5v7a4.5 4.5 0 0 0 1.5-3.5z"/></svg>
+              <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Плейлист -->
-    <div class="playlist-panel">
-      <div class="playlist-header">
-        <h2 id="plHeader">Категория</h2>
-        <span id="plCount">0 треков</span>
+      <div class="playlist-panel">
+        <div class="playlist-header">
+          <h2 id="plHeader">Категория</h2>
+          <span id="plCount">0 треков</span>
+        </div>
+        <div class="playlist" id="playlist"></div>
       </div>
-      <div class="playlist" id="playlist"></div>
+
     </div>
-
   </div>
-</div>
 
-<audio id="audio"></audio>
+  <audio id="audio"></audio>
 
-<script>
-  // аудио пока демо-заглушки (soundhelix), чтобы плеер сразу запускался.
-  // когда добавишь свою музыку — просто меняешь src у треков ниже на пути к файлам
-  const DEMO = i => `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${i}.mp3`;
-
-  const library = {
-    "Философия": {
-      color: "#7c6bff", emoji: "🌙",
-      tracks: [
-        { title: "Тишина между кадрами", artist: "Studio Reverie", src: DEMO(1) },
-        { title: "Вопрос без ответа", artist: "Kaze no Oto", src: DEMO(2) },
-        { title: "Дорога сквозь дождь", artist: "Yume Collective", src: DEMO(3) },
-      ]
-    },
-    "Романтика": {
-      color: "#ff6fa5", emoji: "🌸",
-      tracks: [
-        { title: "Сакура за окном", artist: "Hoshi Duo", src: DEMO(4) },
-        { title: "Первое письмо", artist: "Tsuki Ensemble", src: DEMO(5) },
-        { title: "Обещание под звёздами", artist: "Amai Orchestra", src: DEMO(6) },
-      ]
-    },
-    "Популярные": {
-      color: "#4fd6d0", emoji: "🔥",
-      tracks: [
-        { title: "Опенинг сезона", artist: "Neo Tokyo Beats", src: DEMO(7) },
-        { title: "Хит недели", artist: "Sakura Pulse", src: DEMO(8) },
-        { title: "На повторе", artist: "Anime Charts", src: DEMO(9) },
-      ]
-    },
-    "Грустные": {
-      color: "#6b8bff", emoji: "💧",
-      tracks: [
-        { title: "Последний кадр", artist: "Nami no Kioku", src: DEMO(1) },
-        { title: "Пустая комната", artist: "Shizuka", src: DEMO(2) },
-        { title: "Письмо, которое не отправил", artist: "Ame Trio", src: DEMO(3) },
-      ]
-    },
-    "Весёлые": {
-      color: "#ffc75f", emoji: "🎉",
-      tracks: [
-        { title: "Фестиваль огней", artist: "Matsuri Band", src: DEMO(4) },
-        { title: "Пробежка по крышам", artist: "Genki Squad", src: DEMO(5) },
-        { title: "Летние каникулы", artist: "Natsu Pop", src: DEMO(6) },
-      ]
-    },
-    "Экшн": {
-      color: "#ff5c5c", emoji: "⚔️",
-      tracks: [
-        { title: "Финальная битва", artist: "Kessen Orchestra", src: DEMO(7) },
-        { title: "Погоня по крышам", artist: "Speedline", src: DEMO(8) },
-        { title: "Пробуждение силы", artist: "Zettai Sound", src: DEMO(9) },
-      ]
-    },
-    "Ностальгия": {
-      color: "#c98bff", emoji: "📼",
-      tracks: [
-        { title: "Старая кассета", artist: "Retro Anime FM", src: DEMO(1) },
-        { title: "Школьный двор, 199X", artist: "Natsukashii", src: DEMO(2) },
-        { title: "VHS-воспоминание", artist: "Kioku Tapes", src: DEMO(3) },
-      ]
-    },
-    "Чилл": {
-      color: "#5fd0ff", emoji: "☕",
-      tracks: [
-        { title: "Дождь за окном кафе", artist: "Lofi Sakura", src: DEMO(4) },
-        { title: "Вечер без спешки", artist: "Yohaku", src: DEMO(5) },
-        { title: "Медленное утро", artist: "Chill Studio Ghibli-ish", src: DEMO(6) },
-      ]
-    },
-    "Эпик": {
-      color: "#ff9d4d", emoji: "🌋",
-      tracks: [
-        { title: "Пробуждение титана", artist: "Grand Anime Orchestra", src: DEMO(7) },
-        { title: "Последний рубеж", artist: "Eiyuu Symphony", src: DEMO(8) },
-        { title: "Новая эра", artist: "Hikari Philharmonic", src: DEMO(9) },
-      ]
-    }
-  };
-
-  const categoryNames = Object.keys(library);
-  let currentCategory = categoryNames[0];
-  let currentIndex = 0;
-  let isPlaying = false;
-  let shuffleOn = false;
-  let repeatOn = false;
-
-  // DOM
-  const audio = document.getElementById('audio');
-  const sidebar = document.getElementById('sidebar');
-  const playlistEl = document.getElementById('playlist');
-  const plHeader = document.getElementById('plHeader');
-  const plCount = document.getElementById('plCount');
-  const playBtn = document.getElementById('playBtn');
-  const playIcon = document.getElementById('playIcon');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const shuffleBtn = document.getElementById('shuffleBtn');
-  const repeatBtn = document.getElementById('repeatBtn');
-  const npCat = document.getElementById('npCat');
-  const npTitle = document.getElementById('npTitle');
-  const npArtist = document.getElementById('npArtist');
-  const progress = document.getElementById('progress');
-  const curTime = document.getElementById('curTime');
-  const durTime = document.getElementById('durTime');
-  const volume = document.getElementById('volume');
-  const vinyl = document.getElementById('vinyl');
-  const vinylLabel = document.getElementById('vinylLabel');
-  const arm = document.getElementById('arm');
-
-  const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
-  const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-
-  function renderSidebar(){
-    categoryNames.forEach(name => {
-      const item = document.createElement('div');
-      item.className = 'cat-item' + (name === currentCategory ? ' active' : '');
-      const cat = library[name];
-      item.innerHTML = `<span class="dot" style="background:${cat.color}"></span>${cat.emoji} ${name}`;
-      item.onclick = () => switchCategory(name);
-      item.dataset.name = name;
-      sidebar.appendChild(item);
-    });
-  }
-
-  function switchCategory(name){
-    currentCategory = name;
-    currentIndex = 0;
-    [...sidebar.querySelectorAll('.cat-item')].forEach(el => {
-      el.classList.toggle('active', el.dataset.name === name);
-    });
-    renderPlaylist();
-    loadTrack(false);
-  }
-
-  function renderPlaylist(){
-    const cat = library[currentCategory];
-    plHeader.textContent = `${cat.emoji} ${currentCategory}`;
-    plCount.textContent = `${cat.tracks.length} треков`;
-    playlistEl.innerHTML = '';
-    cat.tracks.forEach((track, i) => {
-      const row = document.createElement('div');
-      row.className = 'track-row' + (i === currentIndex ? ' active' : '');
-      const spinning = (i === currentIndex && isPlaying) ? ' spinning' : '';
-      row.innerHTML = `
-        <div class="mini-disc${spinning}" style="background: radial-gradient(circle, ${cat.color}55, #15111f 70%);">
-          <div class="m-label"></div>
-        </div>
-        <div class="t-meta">
-          <div class="t-title">${track.title}</div>
-          <div class="t-artist">${track.artist}</div>
-        </div>
-        <svg class="t-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      `;
-      row.onclick = () => { currentIndex = i; loadTrack(true); };
-      playlistEl.appendChild(row);
-    });
-  }
-
-  function loadTrack(autoplay){
-    const cat = library[currentCategory];
-    const track = cat.tracks[currentIndex];
-    audio.src = track.src;
-    npCat.textContent = currentCategory;
-    npCat.style.background = cat.color + '33';
-    npCat.style.color = cat.color;
-    npTitle.textContent = track.title;
-    npArtist.textContent = track.artist;
-    vinylLabel.textContent = cat.emoji;
-    vinylLabel.style.background = `radial-gradient(circle, ${cat.color}66, #15111f 75%)`;
-    progress.value = 0;
-    progress.style.setProperty('--pg', '0%');
-    curTime.textContent = '0:00';
-    durTime.textContent = '0:00';
-    renderPlaylist();
-
-    if (autoplay){
-      audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
-    } else {
-      setPlaying(false);
-    }
-  }
-
-  function setPlaying(playing){
-    isPlaying = playing;
-    playIcon.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
-    vinyl.classList.toggle('spinning', playing);
-    arm.classList.toggle('down', playing);
-    renderPlaylist();
-  }
-
-  playBtn.onclick = () => {
-    if (isPlaying){ audio.pause(); setPlaying(false); }
-    else { audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); }
-  };
-
-  function nextTrack(){
-    const list = library[currentCategory].tracks;
-    if (shuffleOn && list.length > 1){
-      let random;
-      do { random = Math.floor(Math.random() * list.length); }
-      while (random === currentIndex);
-      currentIndex = random;
-    } else {
-      currentIndex = (currentIndex + 1) % list.length;
-    }
-    loadTrack(true);
-  }
-
-  function prevTrack(){
-    const list = library[currentCategory].tracks;
-    currentIndex = (currentIndex - 1 + list.length) % list.length;
-    loadTrack(true);
-  }
-
-  nextBtn.onclick = nextTrack;
-  prevBtn.onclick = prevTrack;
-
-  shuffleBtn.onclick = () => {
-    shuffleOn = !shuffleOn;
-    shuffleBtn.classList.toggle('active', shuffleOn);
-  };
-
-  repeatBtn.onclick = () => {
-    repeatOn = !repeatOn;
-    repeatBtn.classList.toggle('active', repeatOn);
-  };
-
-  // когда трек доигрывает до конца:
-  // если включён повтор — начинаем его же заново
-  // если включён shuffle — берём случайный
-  // иначе просто следующий по списку
-  audio.addEventListener('ended', () => {
-    if (repeatOn){
-      audio.currentTime = 0;
-      audio.play();
-    } else {
-      nextTrack();
-    }
-  });
-
-  audio.addEventListener('timeupdate', () => {
-    if (!audio.duration) return;
-    const pct = (audio.currentTime / audio.duration) * 100;
-    progress.value = pct;
-    progress.style.setProperty('--pg', pct + '%');
-    curTime.textContent = formatTime(audio.currentTime);
-  });
-  audio.addEventListener('loadedmetadata', () => {
-    durTime.textContent = formatTime(audio.duration);
-  });
-  progress.addEventListener('input', () => {
-    if (audio.duration) audio.currentTime = (progress.value / 100) * audio.duration;
-  });
-  function formatTime(sec){
-    if (isNaN(sec)) return '0:00';
-    const m = Math.floor(sec/60);
-    const s = Math.floor(sec%60).toString().padStart(2,'0');
-    return `${m}:${s}`;
-  }
-
-  volume.addEventListener('input', () => { audio.volume = volume.value; });
-  audio.volume = volume.value;
-
-  /* ===== Генерация звёзд и лепестков сакуры на фоне ===== */
-  const bg = document.getElementById('bg');
-  for (let i = 0; i < 60; i++){
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.left = Math.random()*100 + 'vw';
-    star.style.top = Math.random()*55 + 'vh';
-    star.style.animationDelay = (Math.random()*3) + 's';
-    bg.appendChild(star);
-  }
-  for (let i = 0; i < 18; i++){
-    const petal = document.createElement('div');
-    petal.className = 'petal';
-    petal.style.left = Math.random()*100 + 'vw';
-    petal.style.animationDuration = (8 + Math.random()*8) + 's';
-    petal.style.animationDelay = (Math.random()*10) + 's';
-    petal.style.opacity = 0.5 + Math.random()*0.4;
-    petal.style.transform = `scale(${0.6 + Math.random()*0.8})`;
-    bg.appendChild(petal);
-  }
-
-  // Инициализация
-  renderSidebar();
-  renderPlaylist();
-  loadTrack(false);
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
